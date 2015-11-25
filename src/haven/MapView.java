@@ -256,12 +256,19 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	}
 
 	public boolean wheel(Coord c, int amount) {
-	    float d = dist + (amount * 5);
+	    float d = dist + (amount * 10);
 	    if(d < 5)
 		d = 5;
 	    dist = d;
 	    return(true);
 	}
+
+		public boolean keydown(KeyEvent ev) {
+			if(ev.getKeyCode() == KeyEvent.VK_HOME) {
+				angl = angl + (float)Utils.cangle(-(float)Math.PI * 0.5f - angl);
+			}
+			return false;
+		}
 
 		@Override
 		public float zoom() {
@@ -421,8 +428,8 @@ public class MapView extends PView implements DTarget, Console.Directory {
 		chfield(tfield + 50);
 		return(true);
 	    } else if(ev.getKeyCode() == KeyEvent.VK_HOME) {
-		tangl = angl + (float)Utils.cangle(-(float)Math.PI * 0.25f - angl);
-		chfield((float)(100 * Math.sqrt(2)));
+		tangl = angl + (float)Utils.cangle(-(float)Math.PI * 0.5f - angl);
+		//chfield((float)(100 * Math.sqrt(2)));
 	    }
 	    return(false);
 	}
@@ -1471,7 +1478,9 @@ public class MapView extends PView implements DTarget, Console.Directory {
 			return true;
 		} else if (ev.isShiftDown() && ev.getKeyCode() == KeyEvent.VK_C) {
 			if (camera != null) {
-				camera = makecam(camtypes.get(camera instanceof OrthoCam ? "bad" : "ortho"), new String[0]);
+				String cam = camera instanceof OrthoCam ? "bad" : "ortho";
+				camera = makecam(camtypes.get(cam), new String[0]);
+				GameUI.instance.soundMsg("Switched camera to '"+cam+"'.", Color.RED);
 			}
 		} else if (ev.isShiftDown() && ev.getKeyCode() == KeyEvent.VK_Z) {
 			Shovel.getSettings().tileCentering = !Shovel.getSettings().tileCentering;

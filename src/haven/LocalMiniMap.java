@@ -46,6 +46,8 @@ public class LocalMiniMap extends Window {
     private Coord playerCoordinates = null;
     private BufferedImage gridCellImage = null;
 
+    private static final Text.Foundry borkaF = new Text.Foundry(Text.monob, 16).aa(true);
+
     @Override
     public void wdgmsg(Widget sender, String msg, Object... args) {
         if (!"close".equals(msg)) super.wdgmsg(sender, msg, args);
@@ -133,9 +135,10 @@ public class LocalMiniMap extends Window {
                     try {
                         Coord ptc = m.getc();
                         ptc = p2c(ptc);
-                        g.chcolor(m.col.getRed(), m.col.getGreen(), m.col.getBlue(), 200);
-                        g.image(MiniMap.plx.layer(Resource.imgc).tex(), ptc.add(MiniMap.plx.layer(Resource.negc).cc.inv()));
-                        g.chcolor();
+                        //g.chcolor(m.col.getRed(), m.col.getGreen(), m.col.getBlue(), 200);
+                        //g.image(MiniMap.plx.layer(Resource.imgc).tex(), ptc.add(MiniMap.plx.layer(Resource.negc).cc.inv()));
+                        g.image(Text.renderstroked("x", m.col, Color.BLACK, borkaF).tex(), ptc.add(MiniMap.plx.layer(Resource.negc).cc.inv()).add(0, -8));
+                        //g.chcolor();
                     } catch (Exception ex) {
 
                     }
@@ -206,10 +209,19 @@ public class LocalMiniMap extends Window {
         synchronized (oc) {
             for (Gob gob : oc) {
                 try {
+                    boolean highlighted = false;
+                    CustomAttrib.HighlightAttrib highlightAttrib = gob.getattr(CustomAttrib.HighlightAttrib.class);
+                    if (highlightAttrib != null && highlightAttrib.highlightOption.enabled)
+                        highlighted = true;
+
                     GobIcon icon = gob.getattr(GobIcon.class);
-                    if (icon != null) {
+                    if (icon != null || highlighted) {
                         Coord gc = p2c(gob.rc);
-                        Coord sz = icon.tex().sz();
+                        Coord sz;
+                        if (icon != null)
+                            sz = icon.tex().sz();
+                        else
+                            sz = new Coord(20, 20);
                         if (c.isect(gc.sub(sz.div(2)), sz))
                             return (gob);
                     }

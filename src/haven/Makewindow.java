@@ -142,16 +142,24 @@ public class Makewindow extends Widget {
 	if(qmod != null) {
 	    g.image(qmodl.tex(), new Coord(0, qmy + 4));
 	    c = new Coord(xoff, qmy);
+		int mx = -1;
+		int pw = 0;
+		int vl = 1;
 	    for(Indir<Resource> qm : qmod) {
 		try {
 		    Tex t = qm.get().layer(Resource.imgc).tex();
 		    g.image(t, c);
 		    c = c.add(t.sz().x + 1, 0);
 
+			if (c.x > mx)
+				mx = c.x;
+
 			if (GameUI.instance != null && GameUI.instance.chrwdg != null) {
 				String name = qm.get().basename();
 				for (CharWnd.SAttr attr : GameUI.instance.chrwdg.skill) {
 					if (name.equals(attr.attr.nm)) {
+						pw++;
+						vl *= attr.attr.comp;
 						Coord sz = attr.attr.comptex.sz();
 						g.image(attr.attr.comptex, c.add(3, t.sz().y / 2 - sz.y / 2));
 						c = c.add(sz.x + 8, 0);
@@ -161,6 +169,8 @@ public class Makewindow extends Widget {
 
 				for (CharWnd.Attr attr : GameUI.instance.chrwdg.base) {
 					if (name.equals(attr.attr.nm)) {
+						pw++;
+						vl *= attr.attr.comp;
 						Coord sz = attr.attr.comptex.sz();
 						g.image(attr.attr.comptex, c.add(3, t.sz().y / 2 - sz.y / 2));
 						c = c.add(sz.x + 8, 0);
@@ -170,7 +180,11 @@ public class Makewindow extends Widget {
 			}
 		} catch(Loading l) {
 		}
-	    }
+		}
+
+		if (pw > 0) {
+			g.image(Text.render(String.format("Cap: %.0f", Math.floor(Math.pow(vl, 1.0f/pw)))).tex(), new Coord(mx + 30, 3 + qmy));
+		}
 	}
 	c = new Coord(xoff, outy);
 	for(Spec s : outputs) {

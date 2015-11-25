@@ -255,23 +255,32 @@ public abstract class ItemInfo {
     }
 
     public static List<ItemInfo> buildinfo(Owner owner, Object[] rawinfo) {
-		List<ItemInfo> ret = new ArrayList<ItemInfo>();
-		for (Object o : rawinfo) {
-			if (o instanceof Object[]) {
-				Object[] a = (Object[]) o;
-				Resource ttres = owner.glob().sess.getres((Integer) a[0]).get();
-				InfoFactory f = ttres.getcode(InfoFactory.class, true);
-				ItemInfo inf = f.build(owner, a);
-				if (inf != null)
-					ret.add(inf);
-			} else if (o instanceof String) {
-				ret.add(new AdHoc(owner, (String) o));
-			} else {
-				throw (new ClassCastException("Unexpected object type " + o.getClass() + " in item info array."));
-			}
+	List<ItemInfo> ret = new ArrayList<ItemInfo>();
+	for(Object o : rawinfo) {
+	    if(o instanceof Object[]) {
+		Object[] a = (Object[])o;
+		Resource ttres;
+		if(a[0] instanceof Integer) {
+		    ttres = owner.glob().sess.getres((Integer)a[0]).get();
+		} else if(a[0] instanceof Resource) {
+		    ttres = (Resource)a[0];
+		} else if(a[0] instanceof Indir) {
+		    ttres = (Resource)((Indir)a[0]).get();
+		} else {
+		    throw(new ClassCastException("Unexpected info specification " + a[0].getClass()));
 		}
-		return (ret);
+		InfoFactory f = ttres.getcode(InfoFactory.class, true);
+		ItemInfo inf = f.build(owner, a);
+		if(inf != null)
+		    ret.add(inf);
+	    } else if(o instanceof String) {
+		ret.add(new AdHoc(owner, (String)o));
+	    } else {
+		throw(new ClassCastException("Unexpected object type " + o.getClass() + " in item info array."));
+	    }
 	}
+	return(ret);
+    }
     
     private static String dump(Object arg) {
 	if(arg instanceof Object[]) {

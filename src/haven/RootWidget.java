@@ -26,6 +26,7 @@
 
 package haven;
 
+import org.apxeolog.shovel.Settings;
 import org.apxeolog.shovel.Shovel;
 
 import java.awt.event.KeyEvent;
@@ -63,11 +64,15 @@ public class RootWidget extends ConsoleHost {
 	    } else if((code == KeyEvent.VK_N)&&ctrl) {
 			Shovel.getSettings().nightvision = !Shovel.getSettings().nightvision;
 			Shovel.saveSettings();
-		} else if ((code == KeyEvent.VK_F11) && ctrl) {
+		} else if ((code == KeyEvent.VK_F9) && ctrl) {
 			Shovel.getSettings().debugWidgets = !Shovel.getSettings().debugWidgets;
-			System.out.println("Widget creation debugging toggled. Press Ctrl+F11 to toggle widget debugging.");
-		} else if((code == KeyEvent.VK_D)&&ctrl) {
+			System.out.println("Widget creation debugging toggled. Press Ctrl+F9 to toggle widget debugging.");
+		} else if ((code == KeyEvent.VK_D) && ctrl) {
 			Shovel.getSettings().debugMode = !Shovel.getSettings().debugMode;
+		} else if ((code == KeyEvent.VK_W) && ev.isShiftDown()) {
+			Shovel.getSettings().qualityDisplayType = Shovel.getSettings().qualityDisplayType == Settings.QualityDisplayType.AVG ?
+					Settings.QualityDisplayType.MAX : Settings.QualityDisplayType.AVG;
+			Shovel.saveSettings();
 		} else if(key != 0) {
 		wdgmsg("gk", (int) key);
 	    }

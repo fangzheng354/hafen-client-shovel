@@ -32,6 +32,7 @@ import org.apxeolog.shovel.Shovel;
 import org.apxeolog.shovel.widget.WidgetEvent;
 import org.apxeolog.shovel.widget.WidgetEventListener;
 
+import java.awt.image.BufferedImage;
 import java.util.*;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
@@ -719,6 +720,9 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	    WritableRaster buf = PUtils.imgraster(progt.f[fr][0].sz);
 	    PUtils.blit(buf, progt.f[fr][0].img.getRaster(), Coord.z);
 	    PUtils.blendblit(buf, progt.f[fr + 1][0].img.getRaster(), Coord.z, bf);
+		BufferedImage img = PUtils.rasterimg(buf);
+		BufferedImage txt = Text.renderstroked(String.format("%d%%", (int) (100 * prog)), Color.WHITE, Color.BLACK).img;
+		img.getGraphics().drawImage(txt, 24 - txt.getWidth() / 2, 9 - txt.getHeight() / 2, null);
 	    curprog = new TexI(PUtils.rasterimg(buf)); curprogf = fr; curprogb = bf;
 	}
 	g.aimage(curprog, new Coord(sz.x / 2, (sz.y * 4) / 10), 0.5, 0.5);
