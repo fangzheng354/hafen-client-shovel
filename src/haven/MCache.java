@@ -60,7 +60,6 @@ public class MCache {
     Session sess;
     Set<Overlay> ols = new HashSet<Overlay>();
     public int olseq = 0;
-    Random gen = new Random();
     Map<Integer, Defrag> fragbufs = new TreeMap<Integer, Defrag>();
 
     public static class LoadingMap extends Loading {
@@ -126,7 +125,6 @@ public class MCache {
 	    MapMesh mesh;
 	    Defer.Future<MapMesh> dmesh;
 	    Rendered[] ols;
-	    int deftag;
 	}
 
 	private class Flavobj extends Gob {
@@ -240,7 +238,6 @@ public class MCache {
 	
 	private void buildcut(final Coord cc) {
 	    final Cut cut = geticut(cc);
-	    final int deftag = ++cut.deftag;
 	    Defer.Future<?> prev = cut.dmesh;
 	    cut.dmesh = Defer.later(new Defer.Callable<MapMesh>() {
 		    public MapMesh call() {
