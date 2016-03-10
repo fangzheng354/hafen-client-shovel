@@ -403,32 +403,32 @@ public class Resource implements Serializable {
 	}
 
 	private void handle(Queued res) {
-	    for(ResSource src : sources) {
-		try {
-		    InputStream in = src.get(res.name);
-		    try {
-			Resource ret = new Resource(this, res.name, res.ver);
-			ret.source = src;
-			ret.load(in);
-			res.res = ret;
-			res.error = null;
-			break;
-		    } finally {
-			in.close();
-		    }
-		} catch(Throwable t) {
-		    LoadException error;
-		    if(t instanceof LoadException)
-			error = (LoadException)t;
-		    else
-			error = new LoadException(String.format("Load error in resource %s(v%d), from %s", res.name, res.ver, src), t, null);
-		    error.src = src;
-		    error.prev = res.error;
-		    res.error = error;
-		}
-	    }
-	    res.done();
-	}
+        for (ResSource src : sources) {
+            try {
+                InputStream in = src.get(res.name);
+                try {
+                    Resource ret = new Resource(this, res.name, res.ver);
+                    ret.source = src;
+                    ret.load(in);
+                    res.res = ret;
+                    res.error = null;
+                    break;
+                } finally {
+                    in.close();
+                }
+            } catch (Throwable t) {
+                LoadException error;
+                if (t instanceof LoadException)
+                    error = (LoadException) t;
+                else
+                    error = new LoadException(String.format("Load error in resource %s(v%d), from %s", res.name, res.ver, src), t, null);
+                error.src = src;
+                error.prev = res.error;
+                res.error = error;
+            }
+        }
+        res.done();
+    }
 
 	public Named load(String name, int ver, int prio) {
 	    Queued ret;
@@ -666,7 +666,7 @@ public class Resource implements Serializable {
 		    Pool remote = new Pool(local());
 		    if(prscache != null)
 			remote.add(new CacheSource(prscache));
-		    _remote = remote;;
+		    _remote = remote;
 		}
 	    }
 	}
