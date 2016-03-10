@@ -582,6 +582,7 @@ public class MCache {
 		    g.dispose();
 		grids.clear();
 		req.clear();
+            startNewSession();
 	    }
 	}
     }
@@ -714,10 +715,16 @@ public class MCache {
 	private static Coord mapLastPosition = null;
 	private static String mapSession = null;
 	private static Queue<SoftReference<Grid>> drawQueue = new LinkedList<SoftReference<Grid>>();
+    private static boolean newSession = false;
+
+    public static void startNewSession() {
+        newSession = true;
+    }
 
 	public static void drawGrid(MCache mCache, Grid grid) {
 		if (grid == null) return;
-		if (mapLastPosition == null || (mapLastPosition != null && mapLastPosition.dist(grid.gc) > 10)) {
+		if (mapLastPosition == null || newSession) {
+            newSession = false;
 			// Start new session
 			drawQueue.clear();
 			mapLastPosition = new Coord(grid.gc);

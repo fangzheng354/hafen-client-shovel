@@ -33,22 +33,23 @@ public class Equipory extends Widget implements DTarget {
     private static final Tex bg = Resource.loadtex("gfx/hud/equip/bg");
     private static final int rx = 34 + bg.sz().x;
     static Coord ecoords[] = {
-	new Coord(0, 0),
-	new Coord(rx, 0),
-	new Coord(0, 33),
-	new Coord(rx, 33),
-	new Coord(0, 66),
-	new Coord(rx, 66),
-	new Coord(0, 99),
-	new Coord(rx, 99),
-	new Coord(0, 132),
-	new Coord(rx, 132),
-	new Coord(0, 165),
-	new Coord(rx, 165),
-	new Coord(0, 198),
-	new Coord(rx, 198),
-	new Coord(0, 231),
-	new Coord(rx, 231),
+            new Coord(0, 0),
+            new Coord(rx, 0),
+            new Coord(0, 33),
+            new Coord(rx, 33),
+            new Coord(0, 66),
+            new Coord(rx, 66),
+            new Coord(0, 99),
+            new Coord(rx, 99),
+            new Coord(0, 132),
+            new Coord(rx, 132),
+            new Coord(0, 165),
+            new Coord(rx, 165),
+            new Coord(0, 198),
+            new Coord(rx, 198),
+            new Coord(0, 231),
+            new Coord(rx, 231),
+            new Coord(34, 0),
     };
     static Coord isz;
     static {
@@ -62,7 +63,7 @@ public class Equipory extends Widget implements DTarget {
     }
     Map<GItem, WItem[]> wmap = new HashMap<GItem, WItem[]>();
 
-	public WItem[] equipItems = new WItem[16];
+	public WItem[] equipItems = new WItem[ecoords.length];
 	
     @RName("epry")
     public static class $_ implements Factory {
@@ -144,8 +145,8 @@ public class Equipory extends Widget implements DTarget {
     }
     
     public void draw(GOut g) {
-	for(Coord ec : ecoords)
-	    g.image(invsq, ec);
+	for(int i = 0; i < 17; i++)
+	    g.image(invsq, ecoords[i]);
 	super.draw(g);
     }
 	

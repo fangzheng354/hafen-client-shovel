@@ -235,7 +235,7 @@ public class LocalMiniMap extends Window {
     public void tick(double dt) {
         Gob pl = ui.sess.glob.oc.getgob(mv.plgob);
         if (pl == null) {
-            this.playerCoordinates = null;
+            this.playerCoordinates = mv.cc.div(tilesz);
             return;
         }
         this.playerCoordinates = pl.rc.div(tilesz);

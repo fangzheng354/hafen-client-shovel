@@ -232,8 +232,10 @@ public class UI {
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	int id;
 	synchronized(this) {
-	    if(!rwidgets.containsKey(sender))
-		throw(new UIException("Wdgmsg sender (" + sender.getClass().getName() + ") is not in rwidgets", msg, args));
+	    if(!rwidgets.containsKey(sender)) {
+            return;
+        }
+		//throw(new UIException("Wdgmsg sender (" + sender.getClass().getName() + ") is not in rwidgets", msg, args));
 	    id = rwidgets.get(sender);
 	}
 	if(rcvr != null)

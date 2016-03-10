@@ -3,24 +3,28 @@ package org.apxeolog.shovel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
+import com.google.gson.internal.Excluder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import haven.Coord;
+import haven.*;
 import org.apxeolog.shovel.highlight.HighlightManager;
 
 import java.awt.*;
 import java.io.*;
+import java.io.Console;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created by APXEOLOG on 31/08/2015.
  * Main class to init startup data like configs etc
  */
 public class Shovel {
-    private static String version = "1.5.6";
+    private static String version = "1.6.2";
     private static Settings settings;
     private static File workingDirectory;
     private static File userDirectory;
@@ -178,6 +182,27 @@ public class Shovel {
             }
             return new Coord(jsonReader.nextString());
         }
+    }
+
+    static {
+        haven.Console.setscmd("ikins", new haven.Console.Command() {
+            public void run(haven.Console cons, String[] args) {
+                if (args.length > 0) {
+                    File kinFile = new File(Shovel.getWorkingDirectory(), args[1]);
+                    if (kinFile.exists()) {
+                        try {
+                            List<String> lines = Files.readAllLines(kinFile.toPath());
+                            lines.forEach((line) -> {
+                                if (GameUI.instance != null)
+                                    GameUI.instance.buddies.wdgmsg("bypwd", line.trim());
+                            });
+                        } catch (Exception ex) {
+                            ALS.alDebugPrint("Cannot parse kin file", ex.getMessage());
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public static void main(String[] args) {

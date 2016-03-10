@@ -263,7 +263,7 @@ public class Skeleton {
 		    public Matrix4f fin(Matrix4f p) {
 			if(cseq != seq) {
 			    Matrix4f xf = Transform.makexlate(new Matrix4f(), new Coord3f(gpos[bone][0], gpos[bone][1], gpos[bone][2]));
-			    if(grot[bone][0] < 0.9999) {
+			    if(grot[bone][0] < 0.999999) {
 				float ang = (float)(Math.acos(grot[bone][0]) * 2.0);
 				xf = xf.mul1(Transform.makerot(new Matrix4f(), new Coord3f(grot[bone][1], grot[bone][2], grot[bone][3]).norm(), ang));
 			    }
@@ -517,7 +517,20 @@ public class Skeleton {
 	    f = ModFactory.def;
 	return(f.create(this, owner, res, sdt));
     }
-    
+
+    public static class ResourceSkeleton extends Skeleton {
+	public final Resource res;
+
+	public ResourceSkeleton(Collection<Bone> bones, Res info) {
+	    super(bones);
+	    this.res = info.getres();
+	}
+
+	public String toString() {
+	    return("Skeleton(" + res.name + ")");
+	}
+    }
+
     @Resource.LayerName("skel")
     public static class Res extends Resource.Layer {
 	public final transient Skeleton s;
@@ -546,11 +559,7 @@ public class Skeleton {
 			throw(new Resource.LoadException("Parent bone " + bp + " not found for " + b.name, getres()));
 		}
 	    }
-	    s = new Skeleton(bones.values()) {
-		    public String toString() {
-			return("Skeleton(" + getres().name + ")");
-		    }
-		};
+	    s = new ResourceSkeleton(bones.values(), this);
 	}
 	
 	public void init() {}
