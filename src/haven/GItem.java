@@ -193,7 +193,20 @@ public class GItem extends AWidget implements ItemInfo.SpriteOwner, GSprite.Owne
 				return null;
 			}
 			itemQualityInfoCache = new ItemQualityInfo();
-			for (ItemInfo info : info()) {
+			for (ItemInfo info : itemInfoList) {
+				if (info instanceof ItemInfo.Contents && info != null) {
+					for (ItemInfo infoContents : ((ItemInfo.Contents) info).sub) {
+						if (infoContents.getClass().getSimpleName().equals("QBuff")) {
+							try {
+								String qname = (String) infoContents.getClass().getDeclaredField("name").get(infoContents);
+								Double qval = (Double) infoContents.getClass().getDeclaredField("q").get(infoContents);
+								itemQualityInfoCache.setByType(qname, qval);
+							} catch (Exception ex) {
+						}
+						}
+					}
+					break;
+				}
 				if (info.getClass().getSimpleName().equals("QBuff")) {
 					try {
 						String qname = (String) info.getClass().getDeclaredField("name").get(info);
