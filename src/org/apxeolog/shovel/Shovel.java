@@ -9,6 +9,8 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import haven.*;
 import org.apxeolog.shovel.highlight.HighlightManager;
+import org.apxeolog.shovel.render.AnimationSuspendList;
+import org.apxeolog.shovel.render.HideList;
 
 import java.awt.*;
 import java.io.*;
@@ -24,10 +26,16 @@ import java.util.List;
  * Main class to init startup data like configs etc
  */
 public class Shovel {
-    private static String version = "1.6.4";
+    private static String version = "1.6.7";
     private static Settings settings;
     private static File workingDirectory;
     private static File userDirectory;
+    private static HideList hideList;
+    private static AnimationSuspendList animationSuspendList;
+
+    public static AnimationSuspendList getAnimationSuspendList() {
+        return animationSuspendList;
+    }
 
     /**
      * Load settings from settings.json
@@ -111,6 +119,8 @@ public class Shovel {
             userDirectory = new File("");
         }
         loadSettings();
+        loadHideList();
+        loadAnimList();
     }
 
     /**
@@ -203,6 +213,72 @@ public class Shovel {
                 }
             }
         });
+    }
+
+    private static void loadHideList() {
+        File settingsFile = new File(workingDirectory, "hide.json");
+        try {
+            if (settingsFile.exists()) {
+                Gson gson = new GsonBuilder()
+                        .create();
+                hideList = gson.fromJson(new FileReader(settingsFile), HideList.class);
+                hideList.init();
+            } else {
+                hideList = HideList.getDefault();
+                saveHideList();
+            }
+        } catch (Exception ex) {
+            ALS.alDebugPrint("Cannot load hide settings:", ex.getMessage());
+            hideList = HideList.getDefault();
+            saveHideList();
+        }
+    }
+
+    public static void saveHideList() {
+        File settingsFile = new File(workingDirectory, "hide.json");
+        try {
+            Gson gson = new GsonBuilder()
+                    .setPrettyPrinting()
+                    .create();
+            Files.write(settingsFile.toPath(), gson.toJson(hideList).getBytes(Charset.forName("utf-8")), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (Exception ex) {
+            ALS.alDebugPrint("Cannot save hide settings file:", ex.getMessage());
+        }
+    }
+
+    private static void loadAnimList() {
+        File settingsFile = new File(workingDirectory, "animations.json");
+        try {
+            if (settingsFile.exists()) {
+                Gson gson = new GsonBuilder()
+                        .create();
+                animationSuspendList = gson.fromJson(new FileReader(settingsFile), AnimationSuspendList.class);
+                animationSuspendList.init();
+            } else {
+                animationSuspendList = AnimationSuspendList.getDefault();
+                saveAnimList();
+            }
+        } catch (Exception ex) {
+            ALS.alDebugPrint("Cannot load animations settings:", ex.getMessage());
+            animationSuspendList = AnimationSuspendList.getDefault();
+            saveAnimList();
+        }
+    }
+
+    public static void saveAnimList() {
+        File settingsFile = new File(workingDirectory, "animations.json");
+        try {
+            Gson gson = new GsonBuilder()
+                    .setPrettyPrinting()
+                    .create();
+            Files.write(settingsFile.toPath(), gson.toJson(animationSuspendList).getBytes(Charset.forName("utf-8")), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (Exception ex) {
+            ALS.alDebugPrint("Cannot save animations settings file:", ex.getMessage());
+        }
+    }
+
+    public static HideList getHideList() {
+        return hideList;
     }
 
     public static void main(String[] args) {

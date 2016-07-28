@@ -67,7 +67,9 @@ public class RootWidget extends ConsoleHost {
 		} else if ((code == KeyEvent.VK_F9) && ctrl) {
 			Shovel.getSettings().debugWidgets = !Shovel.getSettings().debugWidgets;
 			System.out.println("Widget creation debugging toggled. Press Ctrl+F9 to toggle widget debugging.");
-		} else if ((code == KeyEvent.VK_D) && ctrl) {
+		} else if ((code == KeyEvent.VK_F6)) {
+            Shovel.getSettings().enableHide = !Shovel.getSettings().enableHide;
+        } else if ((code == KeyEvent.VK_D) && ctrl) {
 			Shovel.getSettings().debugMode = !Shovel.getSettings().debugMode;
 		} else if ((code == KeyEvent.VK_W) && ev.isShiftDown()) {
 			Shovel.getSettings().qualityDisplayType = Shovel.getSettings().qualityDisplayType == Settings.QualityDisplayType.AVG ?

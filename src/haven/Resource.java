@@ -42,6 +42,7 @@ import java.io.*;
 import javax.imageio.*;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.regex.Pattern;
 
 public class Resource implements Serializable {
     private static ResCache prscache;
@@ -423,7 +424,10 @@ public class Resource implements Serializable {
                 else
                     error = new LoadException(String.format("Load error in resource %s(v%d), from %s", res.name, res.ver, src), t, null);
                 error.src = src;
-                error.prev = res.error;
+                if (res.error != null) {
+                    error.prev = res.error;
+                    error.addSuppressed(res.error);
+                }
                 res.error = error;
             }
         }
@@ -932,10 +936,14 @@ public class Resource implements Serializable {
     public class Neg extends Layer {
 	public Coord cc;
 	public Coord[][] ep;
+        public Coord hitboxTl;
+        public Coord hitboxBr;
 		
 	public Neg(Message buf) {
 	    cc = cdec(buf);
-	    buf.skip(12);
+        hitboxTl = cdec(buf);
+        hitboxBr = cdec(buf);
+        cdec(buf);
 	    ep = new Coord[8][0];
 	    int en = buf.uint8();
 	    for(int i = 0; i < en; i++) {
@@ -1637,12 +1645,44 @@ public class Resource implements Serializable {
 	    buf.skip();
 	}
 	this.layers = layers;
+        checkAnimations();
 	for(Layer l : layers)
 	    l.init();
 	used = false;
 		ready = true;
+
     }
 
+    private void checkAnimations() {
+        if (!Shovel.getSettings().restrictAnimations) return;
+
+        for (Pattern pattern : Shovel.getAnimationSuspendList().patterns) {
+            if (pattern.matcher(name).matches()) {
+                hasAnimations = false; break;
+            }
+        }
+        if (!hasAnimations) {
+            // Remove some layers
+            Iterator<Layer> iterator = layers.iterator();
+            while (iterator.hasNext()) {
+                Layer layer = iterator.next();
+                if (layer instanceof Skeleton.ResPose) {
+                    iterator.remove();
+                } else if (layer instanceof MeshAnim.Res) {
+                    iterator.remove();
+                }/* else if (layer instanceof Material.Res) {
+                    ((Material.Res) layer).removeTexRot();
+                }*/
+            }
+        }
+    }
+
+    private boolean hasAnimations = true;
+
+    public boolean canHasAnimations() {
+        return hasAnimations;
+    }
+    
     private transient Named indir = null;
     public Named indir() {
 	if(indir != null)

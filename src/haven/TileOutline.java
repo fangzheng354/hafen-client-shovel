@@ -20,7 +20,7 @@ public class TileOutline implements Rendered {
         this.map = map;
         this.size = size;
         this.area = (size.x + 1) * (size.y + 1);
-        this.color = new States.ColState(255, 255, 255, 140);
+        this.color = new States.ColState(100, 100, 100, 140);
 
         // double-buffer to prevent flickering
         vertexBuffers = new FloatBuffer[2];
@@ -65,7 +65,7 @@ public class TileOutline implements Rendered {
     }
 
     private Coord3f mapToScreen(Coord c) {
-        return new Coord3f((c.x - ul.x) * MCache.tilesz.x, -(c.y - ul.y) * MCache.tilesz.y, map.getz(c));
+        return new Coord3f((c.x - ul.x) * MCache.tilesz.x, -(c.y - ul.y) * MCache.tilesz.y, map.getz(c) + 0.2f);
     }
 
     private void addLineStrip(Coord3f... vertices) {

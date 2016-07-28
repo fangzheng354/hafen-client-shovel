@@ -28,8 +28,11 @@ package haven;
 
 import org.apxeolog.shovel.Shovel;
 import org.apxeolog.shovel.gob.OverlayListener;
+import org.apxeolog.shovel.render.RenderedRect;
 
+import java.awt.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
     public Coord rc, sc;
@@ -40,8 +43,17 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
     public long id;
     public int frame;
     public final Glob glob;
+
     Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
-    public Collection<Overlay> ols = new LinkedList<Overlay>();
+    public Collection<Overlay> ols = new LinkedList<Overlay>() {
+        public boolean add(Overlay item) {
+	    /* XXX: Remove me once local code is changed to use addol(). */
+            if(glob.oc.getgob(id) != null)
+                glob.oc.changed(Gob.this);
+            return(super.add(item));
+        }
+    };
+
 	private Overlay gobpath = null;
 
 	private ArrayList<OverlayListener> overlayListeners = new ArrayList<>();
@@ -124,6 +136,10 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	    return(false);
 	}
 
+        public Object staticp() {
+            return((spr == null)?null:spr.staticp());
+        }
+
 		@Override
 		public String toString() {
 			try {
@@ -133,7 +149,6 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 			}
 		}
 	}
-
 
     /* XXX: This whole thing didn't turn out quite as nice as I had
      * hoped, but hopefully it can at least serve as a source of
@@ -200,6 +215,8 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	}
     }
 
+    public static class Static {}
+
     public Gob(Glob glob, Coord c, long id, int frame) {
 	this.glob = glob;
 	this.rc = c;
@@ -241,6 +258,14 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 			glob.oc.remove(id);
 	}
 
+
+    /* Intended for local code. Server changes are handled via OCache. */
+    public void addol(Overlay ol) {
+	ols.add(ol);
+    }
+    public void addol(Sprite ol) {
+	addol(new Overlay(ol));
+    }
 
     public Overlay findol(int id) {
 	for(Overlay ol : ols) {
@@ -419,27 +444,101 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 
     public void draw(GOut g) {}
 
+    public Resource getBaseResource() {
+        try {
+            Drawable drawable = getattr(Drawable.class);
+            if (drawable != null) {
+                return drawable.getres();
+            }
+            Composite composite = getattr(Composite.class);
+            if (composite != null) {
+                return composite.getres();
+            }
+        } catch (Exception ex) {
+            return null;
+        }
+        return null;
+    }
+
+    private RenderedRect renderedRect = null;
+    public Boolean hide = null;
+
     public boolean setup(RenderList rl) {
-	loc.tick();
-	for(Overlay ol : ols)
-	    rl.add(ol, null);
-	for(Overlay ol : ols) {
-	    if(ol.spr instanceof Overlay.SetupMod)
-		((Overlay.SetupMod)ol.spr).setupmain(rl);
+        loc.tick();
+        if (hide == null) {
+            Resource res = getBaseResource();
+            if (res != null) {
+                hide = false;
+                for (Pattern pattern : Shovel.getHideList().patterns) {
+                    if (pattern.matcher(res.name).matches()) {
+                        hide = true;
+                    }
+                }
+                if (hide == true) {
+                    Resource.Neg neg = res.layer(Resource.negc);
+                    if (neg != null) {
+                        renderedRect = new RenderedRect(neg.hitboxTl, neg.hitboxBr, Color.BLUE);
+                    }
+                }
+            }
+        }
+        if (Shovel.getSettings().enableHide == false || (hide != null && hide == false)) {
+            for (Overlay ol : ols)
+                rl.add(ol, null);
+            for (Overlay ol : ols) {
+                if (ol.spr instanceof Overlay.SetupMod)
+                    ((Overlay.SetupMod) ol.spr).setupmain(rl);
+            }
+            Drawable d = getattr(Drawable.class);
+            if (d != null)
+                d.setup(rl);
+        } else if (Shovel.getSettings().enableHide == true && hide != null && hide == true) {
+            if (renderedRect != null)
+                rl.add(renderedRect, null);
+        }
+
+        GobHealth hlt = getattr(GobHealth.class);
+        if (hlt != null)
+            rl.prepc(hlt.getfx());
+        Speaking sp = getattr(Speaking.class);
+        if (sp != null)
+            rl.add(sp.fx, null);
+        KinInfo ki = getattr(KinInfo.class);
+        if (ki != null)
+            rl.add(ki.fx, null);
+        return (false);
+    }
+
+    private static final Object DYNAMIC = new Object();
+    private Object seq = null;
+    public Object staticp() {
+	if(seq == null) {
+	    Object fs = new Static();
+	    for(GAttrib attr1 : attr.values()) {
+		Object as = attr1.staticp();
+		if(as == Rendered.CONSTANS) {
+		} else if(as instanceof Static) {
+		} else {
+		    fs = null;
+		    break;
+		}
+	    }
+	    for(Overlay ol : ols) {
+		Object os = ol.staticp();
+		if(os == Rendered.CONSTANS) {
+		} else if(os instanceof Static) {
+		} else {
+		    fs = null;
+		    break;
+		}
+	    }
+	    seq = fs;
 	}
-	GobHealth hlt = getattr(GobHealth.class);
-	if(hlt != null)
-	    rl.prepc(hlt.getfx());
-	Drawable d = getattr(Drawable.class);
-	if(d != null)
-	    d.setup(rl);
-	Speaking sp = getattr(Speaking.class);
-	if(sp != null)
-	    rl.add(sp.fx, null);
-	KinInfo ki = getattr(KinInfo.class);
-	if(ki != null)
-	    rl.add(ki.fx, null);
-	return(false);
+	return((seq == DYNAMIC)?null:seq);
+    }
+
+    void changed() {
+	seq = null;
     }
 
     public Random mkrandoom() {

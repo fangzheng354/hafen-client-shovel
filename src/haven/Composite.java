@@ -185,4 +185,8 @@ public class Composite extends Drawable {
 			return null;
 		}
 	}
+
+    public Object staticp() {
+	return(null);
+    }
 }

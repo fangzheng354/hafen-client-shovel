@@ -63,7 +63,7 @@ public class ResDrawable extends Drawable {
 	} catch(Loading e) {
 	    return;
 	}
-	spr.setup(rl);
+	rl.add(spr, null);
     }
 	
     public void ctick(int dt) {
@@ -86,10 +86,7 @@ public class ResDrawable extends Drawable {
     
     public Skeleton.Pose getpose() {
 	init();
-	if(spr instanceof SkelSprite) {
-	    return(((SkelSprite)spr).pose);
-	}
-	return(null);
+	return(Skeleton.getpose(spr));
     }
 
 	public String getBaseName() {
@@ -109,4 +106,8 @@ public class ResDrawable extends Drawable {
 			return super.toString();
 		}
 	}
+
+    public Object staticp() {
+	return((spr != null)?spr.staticp():null);
+    }
 }

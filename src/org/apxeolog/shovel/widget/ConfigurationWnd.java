@@ -187,15 +187,19 @@ public class ConfigurationWnd extends Window {
                     Shovel.getSettings().showFepAndHunger = val;
                     Shovel.saveSettings();
                     if (val) {
-                        if (GameUI.instance.fepMeter != null)
-                            GameUI.instance.fepMeter.show();
-                        if (GameUI.instance.hungerMeter != null)
-                            GameUI.instance.hungerMeter.show();
+                        if (GameUI.instance != null) {
+                            if (GameUI.instance.fepMeter != null)
+                                GameUI.instance.fepMeter.show();
+                            if (GameUI.instance.hungerMeter != null)
+                                GameUI.instance.hungerMeter.show();
+                        }
                     } else {
-                        if (GameUI.instance.fepMeter != null)
-                            GameUI.instance.fepMeter.hide();
-                        if (GameUI.instance.hungerMeter != null)
-                            GameUI.instance.hungerMeter.hide();
+                        if (GameUI.instance != null) {
+                            if (GameUI.instance.fepMeter != null)
+                                GameUI.instance.fepMeter.hide();
+                            if (GameUI.instance.hungerMeter != null)
+                                GameUI.instance.hungerMeter.hide();
+                        }
                     }
                 }
             }.chainSet(Shovel.getSettings().showFepAndHunger), new Coord(200, 200));
@@ -206,6 +210,13 @@ public class ConfigurationWnd extends Window {
                     Shovel.saveSettings();
                 }
             }.chainSet(Shovel.getSettings().simpleTiles), new Coord(200, 225));
+            generalSettings.add(new CheckBox("Restrict animations (need restart)", false) {
+                @Override
+                public void changed(boolean val) {
+                    Shovel.getSettings().restrictAnimations = val;
+                    Shovel.saveSettings();
+                }
+            }.chainSet(Shovel.getSettings().restrictAnimations), new Coord(200, 250));
             chckQMax.linked.add(chckQAvg);
             chckQAvg.linked.add(chckQMax);
         }

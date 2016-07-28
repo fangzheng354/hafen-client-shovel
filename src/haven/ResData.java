@@ -61,4 +61,15 @@ public class ResData {
 	    ret[i] = new ResData(in[i], Message.nil);
 	return(ret);
     }
+
+    @Override
+    public String toString() {
+        String name = "null";
+        try {
+            name = res.get().name;
+        } catch (Exception ex) {
+
+        }
+        return "(" + name + ";" + Arrays.toString(sdt.rbuf) + ")";
+    }
 }

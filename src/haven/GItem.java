@@ -58,6 +58,7 @@ public class GItem extends AWidget implements ItemInfo.SpriteOwner, GSprite.Owne
 		try {
 			return spr != null && res.get().ready() && info() != null;
 		} catch (Loading ex) {
+            ex.printStackTrace();
 			return false;
 		}
 	}
@@ -174,7 +175,6 @@ public class GItem extends AWidget implements ItemInfo.SpriteOwner, GSprite.Owne
 			try {
 				info.add(new ItemInfo.AdHoc(this, "Res: " + getres().name));
 			} catch (Exception ex) {
-
 			}
 		}
 		return (info);
@@ -188,6 +188,7 @@ public class GItem extends AWidget implements ItemInfo.SpriteOwner, GSprite.Owne
 			try {
 				itemInfoList = info();
 			} catch (Exception ex) {
+                ex.printStackTrace();
 				// Ignore this and return null
 				return null;
 			}
@@ -213,7 +214,7 @@ public class GItem extends AWidget implements ItemInfo.SpriteOwner, GSprite.Owne
 						Double qval = (Double) info.getClass().getDeclaredField("q").get(info);
 						itemQualityInfoCache.setByType(qname, qval);
 					} catch (Exception ex) {
-
+                        ex.printStackTrace();
 					}
 				}
 			}

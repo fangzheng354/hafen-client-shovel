@@ -249,70 +249,70 @@ public class MeshAnim {
 	public final boolean rnd;
 
 	public Res(Resource res, Message buf) {
-	    res.super();
-	    final float[] xfb = new float[3];
-	    int ver = buf.uint8();
-	    if(ver == 1) {
-		id = buf.int16();
-		rnd = buf.uint8() != 0;
-		float len = buf.float32();
-		List<Frame> frames = new LinkedList<Frame>();
-		while(true) {
-		    int t = buf.uint8();
-		    if(t == 0)
-			break;
-		    else if((t < 0) || (t > 3))
-			throw(new Resource.LoadException("Unknown meshanim frame format: " + t, res));
-		    float tm = buf.float32();
-		    int n = buf.uint16();
-		    int[] idx = new int[n];
-		    float[] pos = new float[n * 3];
-		    float[] nrm = new float[n * 3];
-		    int i = 0;
-		    while(i < n) {
-			int st = buf.uint16();
-			int run = buf.uint16();
-			for(int o = 0; o < run; o++) {
-			    idx[i] = st + o;
-			    if(t == 1) {
-				pos[(i * 3) + 0] = buf.float32();
-				pos[(i * 3) + 1] = buf.float32();
-				pos[(i * 3) + 2] = buf.float32();
-				nrm[(i * 3) + 0] = buf.float32();
-				nrm[(i * 3) + 1] = buf.float32();
-				nrm[(i * 3) + 2] = buf.float32();
-			    } else if(t == 2) {
-				Utils.float9995d(buf.int32(), xfb);
-				pos[(i * 3) + 0] = xfb[0];
-				pos[(i * 3) + 1] = xfb[1];
-				pos[(i * 3) + 2] = xfb[2];
-				nrm[(i * 3) + 0] = 0;
-				nrm[(i * 3) + 1] = 0;
-				nrm[(i * 3) + 2] = 0;
-			    } else if(t == 3) {
-				pos[(i * 3) + 0] = Utils.hfdec((short)buf.int16());
-				pos[(i * 3) + 1] = Utils.hfdec((short)buf.int16());
-				pos[(i * 3) + 2] = Utils.hfdec((short)buf.int16());
-				nrm[(i * 3) + 0] = 0;
-				nrm[(i * 3) + 1] = 0;
-				nrm[(i * 3) + 2] = 0;
-			    }
-			    i++;
-			}
-		    }
-		    for(i = 0; i < nrm.length; i++) {
-			if(nrm[i] != 0)
-			    break;
-		    }
-		    if(i == nrm.length)
-			nrm = null;
-		    frames.add(new Frame(tm, idx, pos, nrm));
-		}
-		a = new MeshAnim(frames.toArray(new Frame[0]), len);
-	    } else {
-		throw(new Resource.LoadException("Invalid meshanim format version: " + ver, res));
-	    }
-	}
+        res.super();
+        final float[] xfb = new float[3];
+        int ver = buf.uint8();
+        if (ver == 1) {
+            id = buf.int16();
+            rnd = buf.uint8() != 0;
+            float len = buf.float32();
+            List<Frame> frames = new LinkedList<Frame>();
+            while (true) {
+                int t = buf.uint8();
+                if (t == 0)
+                    break;
+                else if ((t < 0) || (t > 3))
+                    throw (new Resource.LoadException("Unknown meshanim frame format: " + t, res));
+                float tm = buf.float32();
+                int n = buf.uint16();
+                int[] idx = new int[n];
+                float[] pos = new float[n * 3];
+                float[] nrm = new float[n * 3];
+                int i = 0;
+                while (i < n) {
+                    int st = buf.uint16();
+                    int run = buf.uint16();
+                    for (int o = 0; o < run; o++) {
+                        idx[i] = st + o;
+                        if (t == 1) {
+                            pos[(i * 3) + 0] = buf.float32();
+                            pos[(i * 3) + 1] = buf.float32();
+                            pos[(i * 3) + 2] = buf.float32();
+                            nrm[(i * 3) + 0] = buf.float32();
+                            nrm[(i * 3) + 1] = buf.float32();
+                            nrm[(i * 3) + 2] = buf.float32();
+                        } else if (t == 2) {
+                            Utils.float9995d(buf.int32(), xfb);
+                            pos[(i * 3) + 0] = xfb[0];
+                            pos[(i * 3) + 1] = xfb[1];
+                            pos[(i * 3) + 2] = xfb[2];
+                            nrm[(i * 3) + 0] = 0;
+                            nrm[(i * 3) + 1] = 0;
+                            nrm[(i * 3) + 2] = 0;
+                        } else if (t == 3) {
+                            pos[(i * 3) + 0] = Utils.hfdec((short) buf.int16());
+                            pos[(i * 3) + 1] = Utils.hfdec((short) buf.int16());
+                            pos[(i * 3) + 2] = Utils.hfdec((short) buf.int16());
+                            nrm[(i * 3) + 0] = 0;
+                            nrm[(i * 3) + 1] = 0;
+                            nrm[(i * 3) + 2] = 0;
+                        }
+                        i++;
+                    }
+                }
+                for (i = 0; i < nrm.length; i++) {
+                    if (nrm[i] != 0)
+                        break;
+                }
+                if (i == nrm.length)
+                    nrm = null;
+                frames.add(new Frame(tm, idx, pos, nrm));
+            }
+            a = new MeshAnim(frames.toArray(new Frame[0]), len);
+        } else {
+            throw (new Resource.LoadException("Invalid meshanim format version: " + ver, res));
+        }
+    }
 
 	public Anim make() {
 	    return(rnd?a.new RAnim():a.new SAnim());

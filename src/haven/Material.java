@@ -262,6 +262,10 @@ public class Material extends GLState {
 	    }
 	}
 
+        public void removeTexRot() {
+
+        }
+
 	public void init() {
 	    for(Resource.Image img : getres().layers(Resource.imgc)) {
 		TexGL tex = (TexGL)img.tex();

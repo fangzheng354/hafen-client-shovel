@@ -89,7 +89,7 @@ public class LoginScreen extends Widget {
 	    else
 		setfocus(pass);
 	    resize(new Coord(150, 150));
-	    LoginScreen.this.add(this, new Coord(345, 310));
+	    LoginScreen.this.add(this, new Coord(575, 310));
 	}
 
 	public void wdgmsg(Widget sender, String name, Object... args) {
@@ -128,7 +128,7 @@ public class LoginScreen extends Widget {
 	    label = textfs.render("Identity is saved for " + username, java.awt.Color.WHITE);
 	    add(btn = new Button(100, "Forget me"), new Coord(75, 30));
 	    resize(new Coord(250, 100));
-	    LoginScreen.this.add(this, new Coord(295, 330));
+	    LoginScreen.this.add(this, new Coord(495, 330));
 	}
 		
 	Object[] data() {
@@ -166,7 +166,7 @@ public class LoginScreen extends Widget {
 	    adda(btn = new IButton("gfx/hud/buttons/login", "u", "d", "o") {
 		    protected void depress() {Audio.play(Button.lbtdown.stream());}
 		    protected void unpress() {Audio.play(Button.lbtup.stream());}
-		}, 419, 510, 0.5, 0.5);
+		}, 719, 510, 1, 1);
 	    progress(null);
 	}
     }
@@ -335,26 +335,33 @@ public class LoginScreen extends Widget {
 		List<String> accountNames = new LinkedList<>();
 		accountNames.addAll(accountData.keySet());
 		Collections.sort(accountNames, (o1, o2) -> o1.compareToIgnoreCase(o2));
-		for (int i = 0; i < accountNames.size(); i++) {
-			final String username = accountNames.get(i);
-			final String password = accountData.get(username);
-			Button btnAcc = new Button(150, username) {
-				@Override
-				public void click() {
-					parent.wdgmsg("forget");
-					parent.wdgmsg(parent, "login", new AuthClient.NativeCred(username, password), false);
-				}
-			};
-			add(btnAcc, new Coord(0, i * 30));
-			Button btnDel = new Button(15, "X") {
-				public void click() {
-					removeAccount(username);
-				}
-			};
-			add(btnDel, new Coord(150, i * 30 + 6));
-			customWidgets.add(btnAcc);
-			customWidgets.add(btnDel);
-		}
+        int x = 0; int y = 0;
+        for (int i = 0; i < accountNames.size(); i++) {
+            final String username = accountNames.get(i);
+            final String password = accountData.get(username);
+            Button btnAcc = new Button(140, username) {
+                @Override
+                public void click() {
+                    parent.wdgmsg("forget");
+                    parent.wdgmsg(parent, "login", new AuthClient.NativeCred(username, password), false);
+                }
+            };
+            add(btnAcc, new Coord(x, y));
+            Button btnDel = new Button(15, "X") {
+                public void click() {
+                    removeAccount(username);
+                }
+            };
+            add(btnDel, new Coord(x + 140, y + 6));
+            customWidgets.add(btnAcc);
+            customWidgets.add(btnDel);
+
+            y += 30;
+            if (y >= 500) {
+                y = 0;
+                x += 160;
+            }
+        }
 	}
 
 	private void checkForNewReleases() {

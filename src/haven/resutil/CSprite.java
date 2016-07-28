@@ -55,9 +55,12 @@ public class CSprite extends Sprite {
     }
 
     public boolean setup(RenderList rl) {
-		rl.prepc(Location.goback("gobx"));
-		for (Rendered p : parts)
-			rl.add(p, null);
-		return (false);
-	}
+        rl.prepc(Location.goback("gobx"));
+        for(Rendered p : parts)
+            rl.add(p, null);
+        return(false);
+    }
+    public Object staticp() {
+	return(CONSTANS);
+    }
 }

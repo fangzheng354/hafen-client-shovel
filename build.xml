@@ -54,23 +54,23 @@
     </unjar>
   </target>
 
-  <target name="jar" depends="hafen-client,buildinfo,lib-classes">
-    <jar destfile="build/hafen.jar" update="true">
-      <fileset dir="build/classes" />
-      <fileset dir="build/classes-lib" />
-      <manifest>
-	<attribute name="Main-Class" value="haven.MainFrame" />
-	<attribute name="Class-Path" value="lib/jogl.jar lib/gluegen-rt.jar lib/gson-2.3.1.jar builtin-res.jar hafen-res.jar" />
-      </manifest>
+    <target name="jar" depends="hafen-client,buildinfo,lib-classes">
+        <jar destfile="build/hafen.jar" update="true">
+        <fileset dir="build/classes" />
+        <fileset dir="build/classes-lib" />
+        <manifest>
+            <attribute name="Main-Class" value="haven.MainFrame" />
+            <attribute name="Class-Path" value="lib/jogl.jar lib/gluegen-rt.jar lib/gson-2.3.1.jar builtin-res.jar hafen-res.jar" />
+        </manifest>
     </jar>
     <chmod file="build/hafen.jar" perm="a+x" />
-  </target>
-  
-  <target name="res-jar" depends="build-env" unless="has-res-jar">
-    <!--
-    <get src="http://www.havenandhearth.com/java/haven-res.jar" dest="lib/haven-res.jar"
-	 usetimestamp="true" />
-    -->
+</target>
+
+<target name="res-jar" depends="build-env" unless="has-res-jar">
+<!--
+<get src="http://www.havenandhearth.com/java/haven-res.jar" dest="lib/haven-res.jar"
+ usetimestamp="true" />
+-->
     <available property="lib-res-jar" file="lib/hafen-res.jar" />
     <fail unless="lib-res-jar" message="hafen-res.jar not available" />
     <available property="lib-builtin-jar" file="lib/builtin-res.jar" />

@@ -68,5 +68,10 @@ public class CustomAttrib extends GAttrib {
             }
             g.aimage(cachedFont, position, 0.5, 1);
         }
+
+        @Override
+        public Object staticp() {
+            return null;
+        }
     }
 }

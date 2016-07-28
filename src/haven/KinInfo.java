@@ -92,7 +92,12 @@ public class KinInfo extends GAttrib {
 		return (rnm);
 	}
 
-	final PView.Draw2D fx = new PView.Draw2D() {
+    @Override
+    public Object staticp() {
+        return null;
+    }
+
+    final PView.Draw2D fx = new PView.Draw2D() {
 		public void draw2d(GOut g) {
 			if (gob.sc != null) {
 				Coord sc = gob.sc.add(new Coord(gob.sczu.mul(15)));
